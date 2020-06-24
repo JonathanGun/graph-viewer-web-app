@@ -23,6 +23,15 @@ class Body extends React.Component {
           (result) => {
             result = result.payload
             if (result) {
+              var unique_ids = {}
+              result.friends = result.friends.filter((friend) => {
+                if (friend.id in unique_ids || friend.id == id) {
+                  return false
+                } else {
+                  unique_ids[friend.id] = true
+                  return true
+                }
+              })
               this.setState({
                 isLoaded: true,
                 id: result.id,
