@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@material-ui/core": "latest",
+    "@material-ui/icons": "^4.9.1",
     "clsx": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-scripts": "latest"
+    "react-scripts": "latest",
+    "styled-components": "^5.1.1"
   },
   "browserslist": {
     "production": [

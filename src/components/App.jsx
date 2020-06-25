@@ -1,13 +1,17 @@
 import React from "react"
-import SearchBar from "./SearchBar.jsx"
-import Body from "./Body.jsx"
+import { CssBaseline } from '@material-ui/core'
+import { Container, Box } from '@material-ui/core'
 
+import Header from "./Header.jsx"
+import Content from "./Content.jsx"
+import Footer from "./Footer.jsx"
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       startID: null,
+      friendListOpen: true,
     }
   }
 
@@ -19,10 +23,18 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
-        <SearchBar onChange={(e) => this.handleSubmit(e)}/>
-        <Body startID={this.state.startID}/>
-      </div>
+      <Box>
+        <CssBaseline />
+        <Box mb={6}>
+          <Header onSearchBarChange={(e) => this.handleSubmit(e)} />
+        </Box>
+
+        <Container maxWidth="md">
+          <Content startID={this.state.startID}/>
+        </Container>
+
+        <Footer />
+      </Box>
     )
   }
 }
