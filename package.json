@@ -1,6 +1,7 @@
 {
-  "name": "create-react-app",
-  "version": "4.0.0",
+  "name": "suspector",
+  "version": "1.0.0",
+  "description": "graph viewer app made using react and material-ui",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
@@ -28,5 +29,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "engines": {
+    "node": "10.x"
+  },
 }
