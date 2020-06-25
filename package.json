@@ -12,7 +12,10 @@
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.9.1",
     "clsx": "latest",
+    "d3": "^5.5.0",
+    "d3-drag": "^1.2.5",
     "react": "latest",
+    "react-d3-graph": "^2.4.1",
     "react-dom": "latest",
     "react-scripts": "latest",
     "styled-components": "^5.1.1"
