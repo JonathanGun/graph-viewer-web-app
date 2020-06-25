@@ -1,6 +1,6 @@
 import React from "react"
 import { CssBaseline } from '@material-ui/core'
-import { Container, Box } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 
 import Header from "./Header.jsx"
 import Content from "./Content.jsx"
@@ -11,28 +11,25 @@ class App extends React.Component {
     super(props);
     this.state = {
       startID: null,
-      friendListOpen: true,
     }
   }
 
   handleSubmit(e) {
-    this.setState({
-      startID: e.target.value,
-    })
+    if (e.key === "Enter") {
+      console.log("User entered ID: ", e.target.value)
+      this.setState({
+        startID: e.target.value,
+      })
+      e.target.value = ""
+    }
   }
 
   render() {
     return (
       <Box>
         <CssBaseline />
-        <Box mb={6}>
-          <Header onSearchBarChange={(e) => this.handleSubmit(e)} />
-        </Box>
-
-        <Container maxWidth="md">
-          <Content startID={this.state.startID}/>
-        </Container>
-
+        <Header onSearchBarChange={(e) => this.handleSubmit(e)} />
+        <Content startID={this.state.startID}/>
         <Footer />
       </Box>
     )

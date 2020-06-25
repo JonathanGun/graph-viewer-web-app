@@ -6,7 +6,7 @@ export default function SearchBar(props) {
   return (
     <TextField
 	  label="ID"
-	  onChange={props.onChange}
+	  onKeyPress={props.onChange}
 	  helperText="Enter valid ID (1-186), ex: 8, 120, ..."
 	  />
   )
