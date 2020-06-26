@@ -21,7 +21,7 @@ const myConfig = {
   "directed": true,
   "focusAnimationDuration": 1,
   "focusZoom": 1,
-  "height": 500,
+  "height": 600,
   "highlightDegree": 1,
   "highlightOpacity": 0.2,
   "linkHighlightBehavior": true,
@@ -31,7 +31,7 @@ const myConfig = {
   "panAndZoom": false,
   "staticGraph": false,
   "staticGraphWithDragAndDrop": false,
-  "width": 1200,
+  "maxWidth": 1200,
   "d3": {
     "alphaTarget": 0.05,
     "gravity": -100,

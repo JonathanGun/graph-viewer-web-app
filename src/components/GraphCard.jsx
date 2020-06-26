@@ -1,5 +1,5 @@
 import React from 'react'
-import { Typography, Box } from "@material-ui/core"
+import { Typography } from "@material-ui/core"
 import { Card, CardContent, CardHeader, IconButton } from "@material-ui/core"
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
@@ -18,7 +18,7 @@ class GraphCard extends React.Component {
   }
 
   render() {
-    this.state.data.links = [].concat.apply([], Object.values(this.props.links))
+    this.state.data.links = [].concat.apply([], Object.values(this.props.links)).filter((link) => this.props.data[link.source].suspected && this.props.data[link.target].suspected)
     this.state.data.nodes = Array.from(new Set([].concat.apply([], this.state.data.links.map((node) => [node.source, node.target])))).map((id) => {
       return {
         id: id,
@@ -28,29 +28,30 @@ class GraphCard extends React.Component {
     })
     return (
       this.props.show ?
-      <Box mb={3}>
-        <Card>
-          <CardHeader
-            action={
-              <IconButton onClick={this.props.onToggleGraphClick}>
-                { this.props.showGraph ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/> }
-              </IconButton>
-            }
-            title="Graph Visualizer"
-          />
-          {
-            this.props.showGraph && this.state.data.nodes.length > 0 ?
-            <CardContent>
-              <FriendGraph data={this.state.data} onNodeClick={this.props.onNodeClick}/>
-                <Typography variant="caption" color="textSecondary">Click on a node to expand node</Typography><br/>
-                <Typography variant="caption" color="textSecondary">Click again to delete</Typography><br/>
-                <Typography variant="caption" color="textSecondary">Drag node to move node</Typography><br/>
-                <Typography variant="caption" color="textSecondary">Drag anywhere else to move graph</Typography><br/>
-              </CardContent>
-            : null
+      <Card>
+        <CardHeader
+          action={
+            <IconButton onClick={this.props.onToggleGraphClick}>
+              { this.props.showGraph ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/> }
+            </IconButton>
           }
-        </Card>
-      </Box> :
+          title="Graph Visualizer"
+        />
+        {
+          this.props.showGraph && this.state.data.nodes.length > 0 ?
+          <CardContent>
+            <FriendGraph data={this.state.data} onNodeClick={this.props.onNodeClick}/>
+            <Typography variant="caption" color="textSecondary">Click on a node to expand node</Typography><br/>
+            <Typography variant="caption" color="textSecondary">Click again to delete</Typography><br/>
+            <Typography variant="caption" color="textSecondary">Drag node to move node</Typography><br/>
+            <Typography variant="caption" color="textSecondary">Drag anywhere else to move graph</Typography><br/>
+          </CardContent>
+          :
+          <CardContent>
+            <Typography variant="h2" align="center" color="textSecondary">no data</Typography>
+          </CardContent>
+        }
+      </Card> :
       null
     )
   }

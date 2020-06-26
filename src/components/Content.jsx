@@ -1,5 +1,5 @@
 import React from 'react'
-import { Toolbar, Container } from '@material-ui/core'
+import { Toolbar, Container, Grid } from '@material-ui/core'
 import { Button, Box, IconButton } from "@material-ui/core"
 import RefreshIcon from '@material-ui/icons/Refresh'
 import { CircularProgress } from '@material-ui/core'
@@ -98,10 +98,14 @@ class Content extends React.Component {
     })
   }
 
+  toggleSuspectChanged(id) {
+    console.log("onToggleSuspectChanged:", id)
+    this.data[id].suspected ^= true
+    this.forceUpdate()
+  }
+
   handleNodeClick(e) {
-    if (e === this.state.lastClick) {
-      this._removeNode(e)
-    } else if (e in this.links) {
+    if (e in this.links) {
       this.setState({
         lastClick: e,
         showFriends: true,
@@ -113,20 +117,33 @@ class Content extends React.Component {
 
   handleListClick(e) {
     e = e.target
-    while (!e.id) {
-      e = e.parentNode
-    }
-    if (e.id) this.handleNodeClick(e.id)
+    while (!e.id) e = e.parentNode
+    this.handleNodeClick(e.id)
+  }
+
+  handleFetchClick(e) {
+    e = e.target
+    while (!e.id) e = e.parentNode
+    this.loadFromAPI(e.id)
   }
 
   _addNode(node) {
     console.log("Added new node:", node)
-    this.data[node.id] = {
-      name: node.name,
-      element: node.element,
-    }
-    Object.values(node.friends).map((friend) => { this.data[friend.id] = { name: friend.name, element: friend.element } })
-    this.links[node.id] = Object.values(node.friends).map((friend) => { return { source: node.id, target: friend.id } })
+    Object.values(node.friends.concat(node)).forEach((friend) => {
+      if (!(friend.id in this.data)) {
+        this.data[friend.id] = {
+          name: friend.name,
+          element: friend.element,
+          suspected: true,
+        }
+      }
+    })
+    this.links[node.id] = Object.values(node.friends).map((friend) => {
+      return {
+        source: node.id,
+        target: friend.id,
+      }
+    })
   }
 
   _removeNode(id) {
@@ -135,12 +152,6 @@ class Content extends React.Component {
     this.setState({
       lastClick: null,
     })
-  }
-
-  removeLink(from_id, to_id) {
-    console.log("Removed link:", from_id, "to", to_id)
-    this.links[from_id] = this.links[from_id].filter((link) => link.target != to_id)
-    this.forceUpdate()
   }
 
   _randomAddNode() {
@@ -157,7 +168,8 @@ class Content extends React.Component {
   resetGraph() {
     this.links = {}
     this.setState({
-      nodes: {}
+      nodes: {},
+      lastClick: null,
     })
     if (this.state.lastClick) {
       this.loadFromAPI(this.state.lastClick)
@@ -177,38 +189,43 @@ class Content extends React.Component {
   }
 
   render() {
-    var inner = <CircularProgress color="inherit" />
-    if (!this.state.isLoading) {
+    var inner = null
+    if (this.state.isLoading && this.state.nodes.size == 0) {
+      inner = <CircularProgress color="inherit" />
+    } else {
+      console.log(this.data)
       var lastNode = this.state.nodes[this.state.lastClick] ? this.state.nodes[this.state.lastClick] : invalidResult
-      lastNode.friends = lastNode.friends.filter((friend) => Object.values(this.links[lastNode.id]).map((node) => node.target).includes(friend.id))
       inner =
-        <Container maxWidth="md">
+        <Grid container justify="center" spacing={2}>
+          <Grid item xs>
           <FriendCard
             node={lastNode}
+            data={this.data}
             show={this.state.lastClick}
             showFriends={this.state.showFriends}
             onAddFriendClick={(e) => this.handleListClick(e)}
             onToggleFriendClick={() => this.toggleFriendChanged()}
-            onDeleteFriendClick={(from_id, to_id) => this.removeLink(from_id, to_id)}
+            onToggleSuspectClick={(id) => this.toggleSuspectChanged(id)}
+            onFetchClick={(e) => this.handleFetchClick(e)}
           />
-          <GraphCard
-            links={this.links}
-            data={this.data}
-            show={this.state.lastClick}
-            showGraph={this.state.showGraph}
-            onNodeClick={(e) => this.handleNodeClick(e)}
-            onToggleGraphClick={() => this.toggleGraphChanged()}
-          />
-        </Container>
+          </Grid>
+          <Grid item xs>
+            <GraphCard
+              links={this.links}
+              data={this.data}
+              show={this.state.lastClick}
+              showGraph={this.state.showGraph}
+              onNodeClick={(e) => this.handleNodeClick(e)}
+              onToggleGraphClick={() => this.toggleGraphChanged()}
+            />
+          </Grid>
+        </Grid>
     }
 
     return (
-      <Container maxWidth="md">
+      <Container>
         <Toolbar />
         <Box mb={4}>
-          <Button onClick={() => {this.resetGraph();this._randomAddNode()}}>
-            Surprise me
-          </Button>
           <Button onClick={() => this._randomAddNode()}>
             Pick Random
           </Button>

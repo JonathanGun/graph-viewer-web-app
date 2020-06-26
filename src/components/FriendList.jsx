@@ -1,8 +1,9 @@
 import React from "react"
 import { List, ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction, CardContent } from "@material-ui/core"
 import { IconButton } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import AddIcon from '@material-ui/icons/Add'
+import AllOutIcon from '@material-ui/icons/AllOut'
+import VisibilityIcon from '@material-ui/icons/Visibility'
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 
 import CustomAvatar from "./utils/CustomAvatar.jsx"
 
@@ -24,11 +25,15 @@ export default function FriendList(props) {
                 secondary={`ID: #${friend.id} | Element: ${friend.element}`}
               />
               <ListItemSecondaryAction id={friend.id}>
-                <IconButton edge="end" onClick={props.onAddClick}>
-                  <AddIcon />
-                </IconButton>
-                <IconButton edge="end" onClick={() => props.onDeleteClick(friend.id)}>
-                  <DeleteIcon />
+                {
+                  props.isFromSuspected && props.data[friend.id].suspected ?
+                  <IconButton edge="end" onClick={props.onAddClick}>
+                    <AllOutIcon />
+                  </IconButton>
+                  : null
+                }
+                <IconButton edge="end" onClick={() => props.onToggleSuspectClick(friend.id)}>
+                  {props.data[friend.id].suspected ? <VisibilityIcon /> : <VisibilityOffIcon />}
                 </IconButton>
               </ListItemSecondaryAction>
             </ListItem>
