@@ -104,6 +104,7 @@ class Content extends React.Component {
     } else if (e in this.links) {
       this.setState({
         lastClick: e,
+        showFriends: true,
       })
     } else {
       this.loadFromAPI(e)
@@ -136,6 +137,12 @@ class Content extends React.Component {
     })
   }
 
+  removeLink(from_id, to_id) {
+    console.log("Removed link:", from_id, "to", to_id)
+    this.links[from_id] = this.links[from_id].filter((link) => link.target != to_id)
+    this.forceUpdate()
+  }
+
   _randomAddNode() {
     var n = null
     if (this.links.size > 0) {
@@ -150,29 +157,39 @@ class Content extends React.Component {
   resetGraph() {
     this.links = {}
     this.setState({
-      lastClick: null,
+      nodes: {}
     })
+    if (this.state.lastClick) {
+      this.loadFromAPI(this.state.lastClick)
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.startID !== this.props.startID && !(this.props.startID in this.state.nodes)) {
-      this.loadFromAPI(this.props.startID)
+    if (prevProps.startID !== this.props.startID) {
+      if (this.props.startID in this.state.nodes) {
+        this.setState({
+          lastClick: this.props.startID,
+        })
+      } else {
+        this.loadFromAPI(this.props.startID)
+      }
     }
   }
 
   render() {
     var inner = <CircularProgress color="inherit" />
     if (!this.state.isLoading) {
-
       var lastNode = this.state.nodes[this.state.lastClick] ? this.state.nodes[this.state.lastClick] : invalidResult
+      lastNode.friends = lastNode.friends.filter((friend) => Object.values(this.links[lastNode.id]).map((node) => node.target).includes(friend.id))
       inner =
         <Container maxWidth="md">
           <FriendCard
             node={lastNode}
             show={this.state.lastClick}
             showFriends={this.state.showFriends}
-            onClickFriend={(e) => this.handleListClick(e)}
+            onAddFriendClick={(e) => this.handleListClick(e)}
             onToggleFriendClick={() => this.toggleFriendChanged()}
+            onDeleteFriendClick={(from_id, to_id) => this.removeLink(from_id, to_id)}
           />
           <GraphCard
             links={this.links}

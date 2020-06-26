@@ -22,10 +22,10 @@ export default function FriendList(props) {
                 secondary={`ID: #${friend.id} | Element: ${friend.element}`}
               />
               <ListItemSecondaryAction id={friend.id}>
-                <IconButton edge="end" onClick={props.onClickFriend}>
+                <IconButton edge="end" onClick={props.onAddClick}>
                   <AddIcon />
                 </IconButton>
-                <IconButton edge="end" onClick={() => console.log("test")}>
+                <IconButton edge="end" onClick={() => props.onDeleteClick(friend.id)}>
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>
