@@ -17,32 +17,32 @@ function setElementImage(data) {
 // creted from https://danielcaldas.github.io/react-d3-graph/sandbox/index.html?data=small
 const myConfig = {
   "automaticRearrangeAfterDropNode": false,
-  "collapsible": true,
+  "collapsible": false,
   "directed": true,
-  "focusAnimationDuration": 0.1,
-  "focusZoom": 0.1,
-  "height": 1000,
+  "focusAnimationDuration": 1,
+  "focusZoom": 1,
+  "height": 500,
   "highlightDegree": 1,
   "highlightOpacity": 0.2,
   "linkHighlightBehavior": true,
-  "maxZoom": 8,
-  "minZoom": 0.1,
+  "maxZoom": 2,
+  "minZoom": 0.4,
   "nodeHighlightBehavior": true,
   "panAndZoom": false,
   "staticGraph": false,
   "staticGraphWithDragAndDrop": false,
-  "width": 1000,
+  "width": 1200,
   "d3": {
     "alphaTarget": 0.05,
-    "gravity": -500,
-    "linkLength": 300,
+    "gravity": -100,
+    "linkLength": 100,
     "linkStrength": 1,
     "disableLinkForce": false
   },
   "node": {
     "color": "#d3d3d3",
     "fontColor": "black",
-    "fontSize": 12,
+    "fontSize": 8,
     "fontWeight": "normal",
     "highlightColor": "red",
     "highlightFontSize": 12,
@@ -53,7 +53,7 @@ const myConfig = {
     "mouseCursor": "pointer",
     "opacity": 1,
     "renderLabel": true,
-    "size": 450,
+    "size": 180,
     "strokeColor": "none",
     "strokeWidth": 1.5,
     "svg": "",
@@ -70,10 +70,10 @@ const myConfig = {
     "mouseCursor": "pointer",
     "opacity": 1,
     "renderLabel": false,
-    "semanticStrokeWidth": false,
-    "strokeWidth": 4,
-    "markerHeight": 6,
-    "markerWidth": 6
+    "semanticStrokeWidth": true,
+    "strokeWidth": 1.5,
+    "markerHeight": 3,
+    "markerWidth": 2,
   }
 }
 
@@ -84,6 +84,5 @@ export default function FriendGraph(props) {
   data = { setElementImage(props.data) }
   config = { myConfig }
   onClickNode = { props.onNodeClick }
-  onDoubleClickNode = { props.onNodeDoubleClick }
   />
 }

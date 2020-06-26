@@ -4,7 +4,6 @@ import { Box } from '@material-ui/core'
 
 import Header from "./Header.jsx"
 import Content from "./Content.jsx"
-import Footer from "./Footer.jsx"
 
 class App extends React.Component {
   constructor(props) {
@@ -30,7 +29,6 @@ class App extends React.Component {
         <CssBaseline />
         <Header onSearchBarChange={(e) => this.handleSubmit(e)} />
         <Content startID={this.state.startID}/>
-        <Footer />
       </Box>
     )
   }

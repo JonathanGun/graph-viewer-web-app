@@ -1,14 +1,19 @@
 import React from 'react'
-import { Toolbar, Typography, Container } from '@material-ui/core'
-import FriendList from "./FriendList.jsx"
-import FriendGraph from "./FriendGraph.jsx"
-import { Button, Box } from "@material-ui/core"
+import { Toolbar, Container } from '@material-ui/core'
+import { Button, Box, IconButton } from "@material-ui/core"
+import RefreshIcon from '@material-ui/icons/Refresh'
+import { CircularProgress } from '@material-ui/core'
+
+import FriendCard from "./FriendCard.jsx"
+import GraphCard from "./GraphCard.jsx"
 
 import "../stylesheets/content.css"
 
 const getLink = function(id) {
   return `https://avatar.labpro.dev/friends/${id}`
 }
+
+const TOTAL_SUSPECTS = 186
 
 const invalidResult = {
   startID: -1,
@@ -29,13 +34,9 @@ class Content extends React.Component {
     }
     this.data = {}
     this.links = {}
-    this.graphData = {
-      nodes: [],
-      links: [],
-    }
   }
 
-  changeState(id) {
+  loadFromAPI(id) {
     this.setState({
       isLoading: true
     })
@@ -85,6 +86,38 @@ class Content extends React.Component {
     }
   }
 
+  toggleGraphChanged() {
+    this.setState({
+      showGraph: !this.state.showGraph
+    })
+  }
+
+  toggleFriendChanged() {
+    this.setState({
+      showFriends: !this.state.showFriends
+    })
+  }
+
+  handleNodeClick(e) {
+    if (e === this.state.lastClick) {
+      this._removeNode(e)
+    } else if (e in this.links) {
+      this.setState({
+        lastClick: e,
+      })
+    } else {
+      this.loadFromAPI(e)
+    }
+  }
+
+  handleListClick(e) {
+    e = e.target
+    while (!e.id) {
+      e = e.parentNode
+    }
+    if (e.id) this.handleNodeClick(e.id)
+  }
+
   _addNode(node) {
     console.log("Added new node:", node)
     this.data[node.id] = {
@@ -98,98 +131,74 @@ class Content extends React.Component {
   _removeNode(id) {
     console.log("Removed node:", id)
     delete this.links[id]
-  }
-
-  toggleFriendChanged() {
     this.setState({
-      showFriends: !this.state.showFriends
+      lastClick: null,
     })
   }
 
-  toggleGraphChanged() {
+  _randomAddNode() {
+    var n = null
+    if (this.links.size > 0) {
+      n = Object.keys(this.links)[Math.floor(Math.random() * this.links.size)]
+    } else {
+      n = Math.ceil(Math.random() * (TOTAL_SUSPECTS - 1))
+    }
+    console.log("Randomizing...", n)
+    this.loadFromAPI(n)
+  }
+
+  resetGraph() {
+    this.links = {}
     this.setState({
-      showGraph: !this.state.showGraph
+      lastClick: null,
     })
-  }
-
-  handleNodeClick(e) {
-    if (e in this.links) {
-      this._removeNode(e)
-      return
-    }
-    if (e == -1) {
-      e = Math.ceil(Math.random() * 185)
-      console.log("Randomizing...", e)
-    }
-    this.changeState(e)
-  }
-
-  handleListClick(e) {
-    e = e.target
-    if (!e.id) e = e.parentNode.parentNode
-    if (e.id) this.handleNodeClick(e.id)
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.startID !== this.props.startID && !(this.props.startID in this.state.nodes)) {
-      this.changeState(this.props.startID)
+      this.loadFromAPI(this.props.startID)
     }
   }
 
-  render(props) {
-    var inner = <Container maxWidth="md"><Typography>Loading...</Typography></Container>
+  render() {
+    var inner = <CircularProgress color="inherit" />
     if (!this.state.isLoading) {
-      this.graphData.links = [].concat.apply([], Object.values(this.links))
-      this.graphData.nodes = Array.from(new Set([].concat.apply([], this.graphData.links.map((node) => [node.source, node.target])))).map((id) => { return { id: id, name: this.data[id].name, element: this.data[id].element } })
+
       var lastNode = this.state.nodes[this.state.lastClick] ? this.state.nodes[this.state.lastClick] : invalidResult
       inner =
-        <div>
-          <Container maxWidth="md">
-            <Typography variant="h6" key={lastNode.id}>
-              {lastNode.name}
-            </Typography>
-            {
-              lastNode.id !== -1 ?
-              <Typography paragraph>
-                Element: {lastNode.element}
-              </Typography>
-              : null
-            }
-
-            <Button onClick={() => this.toggleFriendChanged()}>
-              Friends: {this.state.showFriends?"ON":"OFF"}
-            </Button>
-
-            <Button onClick={() => this.toggleGraphChanged()}>
-              Graph: {this.state.showGraph?"ON":"OFF"}
-            </Button>
-
-            {
-              lastNode.friends && this.state.showFriends ? 
-              <Box mb={4}>
-                <FriendList friends={lastNode.friends} onClickFriend={(e) => this.handleListClick(e)}/>
-              </Box>
-              : null
-            }
-          </Container>
-
-          <Container maxWidth="lg">
-            {
-              this.graphData.nodes.length > 0 && this.state.showGraph ?
-              <FriendGraph data={this.graphData} onNodeClick={(e) => this.handleNodeClick(e)}/>
-              : null
-            }
-          </Container>
-        </div>
+        <Container maxWidth="md">
+          <FriendCard
+            node={lastNode}
+            show={this.state.lastClick}
+            showFriends={this.state.showFriends}
+            onClickFriend={(e) => this.handleListClick(e)}
+            onToggleFriendClick={() => this.toggleFriendChanged()}
+          />
+          <GraphCard
+            links={this.links}
+            data={this.data}
+            show={this.state.lastClick}
+            showGraph={this.state.showGraph}
+            onNodeClick={(e) => this.handleNodeClick(e)}
+            onToggleGraphClick={() => this.toggleGraphChanged()}
+          />
+        </Container>
     }
 
     return (
-      <div className="content">
-        <main>
-          <Toolbar />
-          { inner }
-        </main>
-      </div>
+      <Container maxWidth="md">
+        <Toolbar />
+        <Box mb={4}>
+          <Button onClick={() => {this.resetGraph();this._randomAddNode()}}>
+            Surprise me
+          </Button>
+          <Button onClick={() => this._randomAddNode()}>
+            Pick Random
+          </Button>
+          <IconButton onClick={() => this.resetGraph()}> <RefreshIcon /> </IconButton>
+        </Box>
+        { inner }
+      </Container>
     )
   }
 }
