@@ -1,8 +1,9 @@
 import React from 'react'
-import { Card, CardHeader, Avatar, IconButton, Box } from "@material-ui/core"
+import { Card, CardHeader, IconButton, Box } from "@material-ui/core"
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 
 import FriendList from "./FriendList.jsx"
+import CustomAvatar from "./utils/CustomAvatar.jsx"
 
 export default function FriendCard(props) {
   return (
@@ -10,7 +11,7 @@ export default function FriendCard(props) {
     <Box mb={3}>
         <Card>
           <CardHeader
-          avatar={<Avatar>{props.node.name.charAt(0)}</Avatar>}
+          avatar={<CustomAvatar name={props.node.name} element={props.node.element}/>}
           action={<IconButton onClick={props.onToggleFriendClick}><KeyboardArrowDownIcon/></IconButton>}
           title={props.node.name}
           subheader={`ID: #${props.node.id} | Element: ${props.node.element}`}

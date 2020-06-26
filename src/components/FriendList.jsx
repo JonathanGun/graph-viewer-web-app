@@ -1,8 +1,10 @@
 import React from "react"
 import { List, ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction, CardContent } from "@material-ui/core"
-import { Avatar, IconButton } from '@material-ui/core'
+import { IconButton } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import AddIcon from '@material-ui/icons/Add'
+
+import CustomAvatar from "./utils/CustomAvatar.jsx"
 
 import "../stylesheets/content.css"
 
@@ -15,7 +17,7 @@ export default function FriendList(props) {
           props.friends.map(friend =>
             <ListItem alignItems="flex-start">
               <ListItemAvatar>
-                <Avatar>{friend.name.charAt(0)}</Avatar>
+                <CustomAvatar name={friend.name} element={friend.element}/>
               </ListItemAvatar>
               <ListItemText
                 primary={friend.name}
