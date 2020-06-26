@@ -13,9 +13,7 @@ export default function FriendCard(props) {
         <Card>
           <CardHeader
           avatar={
-            <Avatar>
-              {props.node.name.charAt(0)}
-            </Avatar>
+            <CustomAvatar name={props.node.name} element={props.node.element}/>
           }
           action={
             <IconButton onClick={props.onToggleFriendClick}>
